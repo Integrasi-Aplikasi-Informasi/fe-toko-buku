@@ -2,9 +2,11 @@
 
 import React, { useState } from "react";
 import { product } from "../../app/libs/product";
+import Link from "next/link";
 
 const Checkout = () => {
     const [quantity, setQuantity] = useState(1);
+    const [paymentUrl, setPaymentUrl] = useState("");
 
     const decreaseQuantity = () => {
         setQuantity((prevState) => (quantity > 1 ? prevState - 1 : null));
@@ -29,14 +31,43 @@ const Checkout = () => {
 
 
         const requestData = await response.json()
-        console.log({ requestData })
+        window.snap.pay(requestData.token)
     };
 
     const generatePaymentLink = async () => {
-        alert("Checkout Payment Link! 🔥")
-    };
+        const secret = process.env.NEXT_PUBLIC_SECRET
+        const encodedSecret = Buffer.from(secret).toString('base64')
+        const basicAuth = `Basic ${encodedSecret}`
 
-    return (
+        let data = {
+            item_details: [{
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                quantity: quantity
+            }
+            ],
+            transaction_details: {
+                order_id: product.id,
+                gross_amount: product.price * quantity
+            }
+        }
+
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API}/v1/payment-links`, {
+                method: "POST",
+                headers: {
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                    "Authorization": basicAuth
+                },
+                body: JSON.stringify(data)
+                })
+
+            const paymentLink = await response.json()
+            setPaymentUrl(paymentLink.payment_url)
+            };
+
+            return(
         <>
             <div className="flex items-center justify-between">
                 <div className="flex sm:gap-4">
@@ -75,6 +106,10 @@ const Checkout = () => {
             >
                 Create Payment Link
             </button>
+            <div className="text-black underline italic">
+                <Link href={paymentUrl} target="_blank">{paymentUrl}</Link>
+            </div>
+            
         </>
     );
 };
