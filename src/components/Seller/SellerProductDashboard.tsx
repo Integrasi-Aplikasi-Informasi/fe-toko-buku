@@ -41,7 +41,7 @@ const SellerProductDashboard = () => {
                 Judul
               </th>
               <th className="border-x-[1px] px-2 border-cream overflow-hidden w-[40%]">
-                Detail
+                Gambar
               </th>
               <th className="w-[20%] px-2">Aksi</th>
             </tr>
