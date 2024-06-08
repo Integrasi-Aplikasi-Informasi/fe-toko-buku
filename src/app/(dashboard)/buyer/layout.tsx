@@ -6,23 +6,21 @@ import { useRouter } from 'next/navigation';
 import { onAuthStateChanged, signOut} from 'firebase/auth';
 import { ref, onValue } from 'firebase/database'; 
 
-
-
-// const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-
-
-
-
-
+const INACTIVITY_TIMEOUT = 0.1 * 60 * 1000;
 
 export default function DashboardLayout({ children }) {
   const [role, setRole] = useState('');
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const [lastActivityTime, setLastActivityTime] = useState(new Date().getTime());
+
 
   useEffect(()=>{
+    const handleUserActivity = () => {
+      setLastActivityTime(new Date().getTime());
+    };
+
     const unsubscribe = onAuthStateChanged(auth, (user)=>{
       if(!user){
         router.push('/login');
@@ -35,11 +33,31 @@ export default function DashboardLayout({ children }) {
           setRole(role)
           setLoading(false)
         })
-        
       }
     });
-    return () => unsubscribe();
-  }, []);
+    
+    window.addEventListener('mousemove', handleUserActivity);
+    window.addEventListener('keydown', handleUserActivity);
+    window.addEventListener('click', handleUserActivity);
+
+    const checkInactivity = () => {
+      const currentTime = new Date().getTime();
+      if (currentTime - lastActivityTime > INACTIVITY_TIMEOUT) {
+        signOut(auth);
+      }
+    };
+
+    const intervalId = setInterval(checkInactivity, 1000);
+
+    return () =>
+      {
+        unsubscribe();
+        window.removeEventListener('mousemove', handleUserActivity);
+        window.removeEventListener('keydown', handleUserActivity);
+        window.removeEventListener('click', handleUserActivity);
+        clearInterval(intervalId);
+      };
+  }, [router, lastActivityTime]);
 
   if (loading) {
     return <p>Loading...</p>;
