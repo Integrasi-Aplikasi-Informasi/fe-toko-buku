@@ -52,7 +52,6 @@ const handleDelete = (id: number) => {
 };
 
     return (
-      <div className="min-h-screen bg-gray-100 flex flex-col justify-center p-10">
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
           <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -94,7 +93,6 @@ const handleDelete = (id: number) => {
               </tbody>
           </table>
       </div>
-  </div>
     )
 }
 
