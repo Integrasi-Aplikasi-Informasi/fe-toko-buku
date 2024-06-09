@@ -3,48 +3,42 @@
 import { useEffect, useState } from "react";
 import { formatPrice } from "@/lib/utils";
 import { Product } from "@/types/product";
+import { database } from '/firebaseConfig'
+import { useSeller } from "@/context/SellerContext";
+import { ref, remove } from "firebase/database";
 
-// const dummyProducts: Product[] = [
-//   {
-//       id: 1,
-//       image: 'https://via.placeholder.com/150',
-//       title: 'Cara Melakukan Integrasi Aplikasi dan Informasi',
-//       author: 'Khalid Rizki Ananta',
-//       stock: 10,
-//       price: 50000,
-//   },
-//   {
-//       id: 2,
-//       image: 'https://via.placeholder.com/150',
-//       title: 'Produk 2',
-//       author: 'Pengarang 2',
-//       stock: 5,
-//       price: 75000,
-//   },
-//   {
-//       id: 3,
-//       image: 'https://via.placeholder.com/150',
-//       title: 'Produk 3',
-//       author: 'Pengarang 3',
-//       stock: 20,
-//       price: 100000,
-//   },
-// ];
 interface SellerProductDashboardProps {
     products: Product[];
 }
 
 const SellerProductDashboard : React.FC<SellerProductDashboardProps> = ({ products })=> {
+    const { sellerId } = useSeller();
+    const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
     const handleEdit = (id: number) => {
     // TODO: Edit produk
         console.log(`Edit produk dengan ID: ${id}`);
     };
 
-    const handleDelete = (id: number) => {
-    // TODO: Hapus produk
-        console.log(`Hapus produk dengan ID: ${id}`);
+    const handleDelete = (product: Product) => {
+        console.log(product.title)
+        setProductToDelete(product);
     };
+    
+      const confirmDelete = () => {
+        // console.log("terhapus")
+        if (productToDelete) {
+          const productRef = ref(database, `user_seller/${sellerId}/products/${productToDelete.id}`);
+          remove(productRef)
+            .then(() => {
+              console.log("Product deleted successfully!");
+              setProductToDelete(null); // Hapus data produk yang akan dihapus setelah dihapus dari database
+            })
+            .catch((error) => {
+              console.error("Error deleting product: ", error);
+            });
+        }
+      };
 
     return (
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
@@ -68,7 +62,7 @@ const SellerProductDashboard : React.FC<SellerProductDashboardProps> = ({ produc
                           <td className="px-6 py-4 whitespace-nowrap">{product.title}</td>
                           <td className="px-6 py-4 whitespace-nowrap">{product.author}</td>
                           <td className="px-6 py-4 whitespace-nowrap">{product.stock}</td>
-                          <td className="px-6 py-4 whitespace-nowrap">{product.price}</td>
+                          <td className="px-6 py-4 whitespace-nowrap">{formatPrice(product.price)}</td>
                           <td className="px-6 py-4 whitespace-nowrap">
                               <button
                                 //   onClick={() => handleEdit(product.id)}
@@ -77,9 +71,9 @@ const SellerProductDashboard : React.FC<SellerProductDashboardProps> = ({ produc
                                   Edit
                               </button>
                               <button
-                                //   onClick={() => handleDelete(product.id)}
-                                  className="px-4 py-2 bg-[#F08CAE] text-white rounded-lg hover:bg-[#d77997]"
-                              >
+                                    onClick={() => handleDelete(product)}
+                                    className="px-4 py-2 bg-[#F08CAE] text-white rounded-lg hover:bg-[#d77997]"
+                                >
                                   Hapus
                               </button>
                           </td>
@@ -87,6 +81,28 @@ const SellerProductDashboard : React.FC<SellerProductDashboardProps> = ({ produc
                   ))}
               </tbody>
           </table>
+
+          {productToDelete && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
+                    <div className="bg-white p-6 rounded-lg">
+                        <p>Apakah Anda yakin ingin menghapus <b>{productToDelete?.title}</b>?</p>
+                        <div className="mt-4 flex justify-end">
+                            <button
+                                onClick={() => setProductToDelete(null)}
+                                className="mr-2 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={confirmDelete}
+                                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                            >
+                                Hapus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
       </div>
     )
 }
