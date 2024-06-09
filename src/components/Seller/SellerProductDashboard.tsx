@@ -63,7 +63,7 @@ const SellerProductDashboard : React.FC<SellerProductDashboardProps> = ({ produc
                   {products.map((product) => (
                       <tr key={product.id}>
                           <td className="px-6 py-4 whitespace-nowrap">
-                              <img src={product.imgUrl} alt={product.title} className="w-16 h-16 object-cover" />
+                              <img src={product.photoUrl} alt={product.title} className="w-16 h-25 object-cover"/>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">{product.title}</td>
                           <td className="px-6 py-4 whitespace-nowrap">{product.author}</td>
