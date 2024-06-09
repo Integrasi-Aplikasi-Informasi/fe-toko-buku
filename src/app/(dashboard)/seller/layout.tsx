@@ -1,16 +1,19 @@
 // import ProtectedPage from "@/components/Auth/protectedPage";
 'use client'
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, createContext, useContext } from 'react';
 import { auth,database } from '/firebaseConfig';
 import { useRouter } from 'next/navigation';
 import { onAuthStateChanged, signOut} from 'firebase/auth';
 import { ref, onValue } from 'firebase/database'; 
+import { SellerProvider } from '@/context/SellerContext';
 
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // Timeout 30 Menit
+
 
 export default function DashboardLayout({ children }) {
   const [role, setRole] = useState('');
   const [loading, setLoading] = useState(true);
+  const [sellerId, setSellerId] = useState<string>("");
   const router = useRouter();
 
   const [lastActivityTime, setLastActivityTime] = useState(new Date().getTime());
@@ -30,6 +33,9 @@ export default function DashboardLayout({ children }) {
         onValue(userRef, (snapshot) => {
           const role = snapshot.val().role
           setRole(role)
+          if (role === 'seller') {
+            setSellerId(currentUser.uid);
+          }
           setLoading(false)
         })
         
@@ -72,9 +78,12 @@ export default function DashboardLayout({ children }) {
     return (<main>Access Denied</main>)
   }
 
-  return ( role == "seller" &&
-  <main>
-    {children}
-    <button onClick={handleSignOut}>Sign Out</button>
-  </main>
-  )};
+  return (
+    <SellerProvider sellerId={sellerId}>
+      <main>
+        {children}
+        <button onClick={handleSignOut}>Sign Out</button>
+      </main>
+    </SellerProvider>
+  );
+}
