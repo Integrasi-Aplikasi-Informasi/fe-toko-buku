@@ -21,7 +21,12 @@ const Login = () => {
       onValue(userRef, (snapshot)=>{
         const role = snapshot.val().role
         alert('success SignIn ' + role)
-        router.push('/'+ role)
+        if (role === "seller") {
+          router.push('/seller/products')
+        } else {
+          router.push('/'+ role)
+        }
+        
       })
     } catch (error) {
       console.error("Error logging in: ", error);
