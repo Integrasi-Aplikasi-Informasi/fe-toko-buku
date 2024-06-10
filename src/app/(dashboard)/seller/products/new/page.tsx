@@ -43,8 +43,34 @@ const NewProductPage = () => {
     const [uploading, setUploading] = useState(false);
     const router = useRouter();
 
+    const [submitClicked, setSubmitClicked] = useState(false); // State untuk menandai apakah tombol submit telah ditekan
+    const [isFormValid, setIsFormValid] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+
+    useEffect(() => {
+        const isValid =
+            title.trim() !== '' &&
+            author.trim() !== '' &&
+            description.trim() !== '' &&
+            stock !== 0 &&
+            price !== 0 &&
+            photoUrl.trim() !== '';
+
+        setIsFormValid(isValid);
+        if (!isValid && submitClicked) {
+            setErrorMessage('Harap lengkapi semua kolom sebelum mengirimkan formulir.');
+        } else {
+            setErrorMessage('');
+        }
+    }, [title, author, description, stock, price, photoUrl, submitClicked]);
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        setSubmitClicked(true);
+
+        if (!isFormValid) {
+            return;
+        }
     
         // Membuat objek produk yang akan diunggah ke Firebase
         const productData = {
@@ -75,6 +101,7 @@ const NewProductPage = () => {
             setPrice(0);
             setPhotoUrl('');
             setUploading(false);
+            setSubmitClicked(false);
     
             // Redirect atau tindakan lain yang sesuai dengan aplikasi Anda
             router.push('/seller/products'); // Contoh: Mengarahkan pengguna ke halaman dashboard setelah menambahkan produk
@@ -175,7 +202,14 @@ const NewProductPage = () => {
                             className="border rounded-lg px-3 py-2 mt-1 text-sm w-full border-slate-400"
                         />
                         </div>
-                        <button type="submit" className="transition duration-200 bg-blue-500 hover:bg-blue-600 focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block">
+                        {/* {submitClicked && !isFormValid && (
+                            <p className="text-red-500 text-sm mb-5">{errorMessage}</p>
+                        )} */}
+                        <button 
+                            type="submit" 
+                            className="transition duration-200 bg-blue-500 hover:bg-blue-600 focus:bg-blue-700 focus:shadow-sm focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 text-white w-full py-2.5 rounded-lg text-sm shadow-sm hover:shadow-md font-semibold text-center inline-block"
+                            disabled={!isFormValid}    
+                        >
                             <span className="inline-block mr-2">Tambah Produk</span>
                         </button>
                     </form>
