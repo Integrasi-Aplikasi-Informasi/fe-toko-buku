@@ -28,7 +28,7 @@ const SellerProductDashboard : React.FC<SellerProductDashboardProps> = ({ produc
       const confirmDelete = () => {
         // console.log("terhapus")
         if (productToDelete) {
-          const productRef = ref(database, `user_seller/${sellerId}/products/${productToDelete.id}`);
+          const productRef = ref(database, `user_seller/${sellerId}/products/${productToDelete.product_id}`);
           remove(productRef)
             .then(() => {
               console.log("Product deleted successfully!");
@@ -55,7 +55,7 @@ const SellerProductDashboard : React.FC<SellerProductDashboardProps> = ({ produc
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                   {products.map((product) => (
-                      <tr key={product.id}>
+                      <tr key={product.product_id}>
                           <td className="px-6 py-4 whitespace-nowrap">
                               <img src={product.photoUrl} alt={product.title} className="w-16 h-25 object-cover"/>
                           </td>
