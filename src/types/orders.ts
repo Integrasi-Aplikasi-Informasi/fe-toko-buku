@@ -2,7 +2,8 @@ export interface Order {
     orderId: string;
     itemId: string;
     sellerId: string;
-    buyerId: String;
+    buyerId: string;
+    username: string;
     amount: number;
     status: string;
     shipping_address: string;

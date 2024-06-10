@@ -1,7 +1,6 @@
 "use client"
 import SellerNavbar from "@/components/Seller/SellerNavbar";
-import SellerProductDashboard from "@/components/Seller/SellerProductDashboard";
-import { get, getDatabase, onValue, ref } from "firebase/database";
+import { get, onValue, ref } from "firebase/database";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useSeller } from "@/context/SellerContext";
@@ -34,6 +33,7 @@ export default function ProductsDashboardPage() {
         userSnapshot.forEach((userSnapshotChild) => {
             const uid = userSnapshotChild.key;
             const shippingAddress = userSnapshotChild.child('shipping_address').val();
+            const username = userSnapshotChild.child('username').val();
     
             const userOrdersRef = ref(database, `user_buyer/${uid}/orders`);
             onValue(userOrdersRef, (ordersSnapshot) => {
@@ -45,13 +45,14 @@ export default function ProductsDashboardPage() {
                             const orderData: Order = {
                                 orderId: order.order_id,
                                 itemId: order.item_id,
+                                username: username,
                                 sellerId: order.seller_id,
                                 buyerId: uid,
                                 amount: order.amount,
                                 status: order.status,
                                 shipping_address: shippingAddress,
                                 timestamp: order.timestamp,
-                                cost: order.cost
+                                cost: order.totalCost
                             };
                             orders.push(orderData);
                         }

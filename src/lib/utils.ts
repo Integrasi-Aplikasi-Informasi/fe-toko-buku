@@ -5,6 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function formatTimestamp(timestamp: number): string {
+  var ts = new Date(timestamp);
+  return ts.toLocaleString()
+}
+
 export function formatPrice(price : number | string) {
   // Mengonversi harga ke dalam bentuk number jika dalam bentuk string
   const numericPrice = typeof price === "string" ? parseFloat(price) : price;
