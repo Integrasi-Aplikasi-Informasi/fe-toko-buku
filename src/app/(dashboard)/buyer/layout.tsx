@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { onAuthStateChanged, signOut} from 'firebase/auth';
 import { ref, onValue } from 'firebase/database'; 
 
-const INACTIVITY_TIMEOUT = 0.1 * 60 * 1000;
+const INACTIVITY_TIMEOUT = 30 * 60 * 1000;
 
 export default function DashboardLayout({ children }) {
   const [role, setRole] = useState('');
