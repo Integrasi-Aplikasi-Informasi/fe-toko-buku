@@ -92,7 +92,13 @@ const NewProductPage = () => {
     
             // Menambahkan data produk ke Firebase
             const newProductRef = push(productsRef, productData);
-    
+            // Mendapatkan ID produk yang baru ditambahkan
+            const productId = newProductRef.key;
+            // Menambahkan ID produk ke dalam objek produk sebelum diunggah ke Firebase
+            const productDataWithId = { ...productData, product_id: productId };
+
+            // Menyimpan data produk beserta ID ke Firebase
+            await set(newProductRef, productDataWithId);
             // Mengosongkan input setelah berhasil menambahkan produk
             setTitle('');
             setAuthor('');
