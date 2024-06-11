@@ -6,6 +6,7 @@ import { Product } from "@/types/product";
 import { database } from '/firebaseConfig'
 import { useSeller } from "@/context/SellerContext";
 import { ref, remove } from "firebase/database";
+import { useRouter } from "next/navigation";
 
 interface SellerProductDashboardProps {
     products: Product[];
@@ -13,11 +14,12 @@ interface SellerProductDashboardProps {
 
 const SellerProductDashboard : React.FC<SellerProductDashboardProps> = ({ products })=> {
     const { sellerId } = useSeller();
+    const router = useRouter();
     const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
-    const handleEdit = (id: number) => {
+    const handleEdit = (id: string) => {
     // TODO: Edit produk
-        console.log(`Edit produk dengan ID: ${id}`);
+        router.push(`/seller/products/${id}`);
     };
 
     const handleDelete = (product: Product) => {
@@ -65,7 +67,7 @@ const SellerProductDashboard : React.FC<SellerProductDashboardProps> = ({ produc
                           <td className="px-6 py-4 whitespace-nowrap">{formatPrice(product.price)}</td>
                           <td className="px-6 py-4 whitespace-nowrap">
                               <button
-                                //   onClick={() => handleEdit(product.id)}
+                                    onClick={() => handleEdit(product.product_id)}
                                   className="mr-2 px-4 py-2 bg-[#35CE8D] text-white rounded-lg hover:bg-[#2eae76]"
                               >
                                   Edit
