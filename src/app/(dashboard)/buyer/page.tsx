@@ -1,19 +1,22 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import Link from "next/link";
 import { database } from "/firebaseConfig";
 import { ref, onValue } from "firebase/database";
+import { Product } from "@/types/product";
+import { formatPrice } from "@/lib/utils";
 
 export default function DashboardBuyer() {
   const [searchQuery, setSearchQuery] = useState("");
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [booksData, setBooksData] = useState([]);
+  const [booksData, setBooksData] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchBooksFromFirebase = async () => {
       try {
         const userSellersRef = ref(database, "user_seller");
-        const allProducts = [];
+
+        const allProducts: Product[] = [];
 
         onValue(userSellersRef, (snapshot) => {
           snapshot.forEach((userSellerSnapshot) => {
@@ -21,16 +24,22 @@ export default function DashboardBuyer() {
 
             onValue(productsRef, (productsSnapshot) => {
               productsSnapshot.forEach((productSnapshot) => {
-                const product = productSnapshot.val();
-                allProducts.push({
-                  id: product.product_id,
-                  title: product.title,
-                  author: product.author,
-                });
+                const productData = productSnapshot.val();
+                const product: Product = {
+                  product_id: productSnapshot.key,
+                  title: productData.title,
+                  author: productData.author,
+                  description: productData.description,
+                  price: productData.price,
+                  stock: productData.stock,
+                  sold: productData.sold,
+                  photoUrl: productData.photoUrl,
+                };
+                allProducts.push(product);
               });
+              setBooksData(allProducts);
             });
           });
-          setBooksData(allProducts);
         });
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -50,11 +59,11 @@ export default function DashboardBuyer() {
     setDropdownVisible(searchQuery.length > 0 && filteredBooks.length > 0);
   }, [searchQuery, filteredBooks]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  const handleBookSelect = (bookTitle) => {
+  const handleBookSelect = (bookTitle: string) => {
     setSearchQuery(bookTitle);
     setDropdownVisible(false);
   };
@@ -68,8 +77,8 @@ export default function DashboardBuyer() {
           {dropdownVisible && (
             <ul className="absolute left-0 right-0 bg-white border border-gray-200 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg z-10">
               {filteredBooks.map((book) => (
-                <li key={book.id} className="p-2 hover:bg-blue-100 cursor-pointer text-black" onClick={() => handleBookSelect(book.title)}>
-                  <Link href={`/beliBuku?bookId=${book.id}`}>
+                <li key={book.product_id} className="p-2 hover:bg-blue-100 cursor-pointer text-black" onClick={() => handleBookSelect(book.title)}>
+                  <Link href={`/beliBuku?bookId=${book.product_id}`}>
                     <strong>{book.title}</strong> - <span>{book.author}</span>
                   </Link>
                 </li>
@@ -78,14 +87,21 @@ export default function DashboardBuyer() {
           )}
         </div>
       </header>
+
       <main className="container mx-auto">
         <h2 className="text-2xl font-semibold mb-4">Purchased Books</h2>
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredBooks.map((book) => (
-            <li key={book.id} className="bg-white shadow-md rounded-lg p-4">
-              <Link href={`/beliBuku?bookId=${book.id}`}>
-                <h3 className="text-xl font-semibold">{book.title}</h3>
-                <p className="text-gray-600">{book.author}</p>
+            <li key={book.product_id} className="bg-white shadow-md rounded-lg p-4">
+              <Link href={`/beliBuku?bookId=${book.product_id}`}>
+                <div className="flex items-center">
+                  <img src={book.photoUrl} alt={book.title} className="w-20 h-20 object-cover mr-4" />
+                  <div>
+                    <h3 className="text-xl font-semibold">{book.title}</h3>
+                    <p className="text-gray-600">{book.author}</p>
+                    <p className="text-red-500 font-bold">{formatPrice(book.price)}</p>
+                  </div>
+                </div>
               </Link>
             </li>
           ))}
