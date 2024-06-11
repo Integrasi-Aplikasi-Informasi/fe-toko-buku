@@ -1,11 +1,22 @@
 'use client';
 import Checkout from "../../components/checkout/checkout";
 import { product }  from "../libs/product";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from 'next/image';
+import { useSearchParams, useRouter } from 'next/navigation'
+import useProductById from "@/lib/useProductById";
 
-export default function Home() {
+export default function CheckoutPage() {
+  const searchParams = useSearchParams()
+  const bookId = searchParams.get('bookId')
+  const productToBePurchased = useProductById(bookId)
+  const router = useRouter();
+
   useEffect(() => {
+    if (!bookId) {
+      router.push('/buyer')
+    }
+
     const snapScript = "https://app.sandbox.midtrans.com/snap/snap.js"
     const clientKey = process.env.NEXT_PUBLIC_CLIENT
     const script = document.createElement('script')
@@ -18,31 +29,39 @@ export default function Home() {
     return () => {
       document.body.removeChild(script)
     }
-  }, []);
+  }, [bookId, router]);
 
+  if (!productToBePurchased) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
   return (
-    <>
-      <main className="max-w-xl mx-auto sm:p-16">
-        <div className="flex flex-col">
-          <Image
-            src={product.image}
-            alt={product.name}
-            width={250}
-            height={250}
-            className="w-full object-cover"
-          />
-          <div className="border border-gray-100 bg-white p-6">
-            <h3 className="mt-4 text-lg font-medium text-gray-900">
-              {product.name}
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-center">
+      <div className="p-10 xs:p-0 mx-auto md:w-full md:max-w-lg">
+        <h1 className="font-bold text-center text-2xl mb-5">Checkout</h1>
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <div className="flex flex-col items-center">
+            <img
+              src={productToBePurchased.photoUrl}
+              alt={productToBePurchased.title}
+              className="w-40 h-40 object-cover rounded-md mb-4"
+            />
+            <h3 className="text-xl font-semibold text-gray-900 text-center">
+              {productToBePurchased.title}
             </h3>
-            <p className="mt-1.5 text-sm text-gray-700">Rp {product.price}</p>
-            <p className="py-4 text-sm text-gray-700 text-justify">
-              {product.description}
+            <p className="mt-2 text-lg text-gray-700 text-center">Rp {productToBePurchased.price}</p>
+            <p className="mt-4 text-gray-600 text-justify">
+              {productToBePurchased.description}
             </p>
-            <Checkout />
+            <div className="mt-6 w-full">
+              <Checkout product={productToBePurchased}/>
+            </div>
           </div>
         </div>
-      </main>
-    </>
+      </div>
+    </div>
   );
 }

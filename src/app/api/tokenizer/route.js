@@ -8,15 +8,15 @@ let snap = new Midtrans.Snap({
 })
 
 export async function POST(request) {
-    const {id, productName, price, quantity} = await request.json()
+    const {id: product_id, productName: title, price, quantity} = await request.json()
     let parameter = {
         item_details: {
-            name: productName,
+            name: title,
             price: price,
             quantity: quantity
         },
         transaction_details: {
-            order_id: id,
+            order_id: product_id,
             gross_amount: price * quantity
         }
     }
