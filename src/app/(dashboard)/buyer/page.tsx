@@ -89,11 +89,11 @@ export default function DashboardBuyer() {
       </header>
 
       <main className="container mx-auto">
-        <h2 className="text-2xl font-semibold mb-4">Purchased Books</h2>
+        <h2 className="text-2xl font-semibold mb-4">Book Catalogue</h2>
         <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredBooks.map((book) => (
             <li key={book.product_id} className="bg-white shadow-md rounded-lg p-4">
-              <Link href={`/beliBuku?bookId=${book.product_id}`}>
+              <Link href={`/checkout?bookId=${book.product_id}`}>
                 <div className="flex items-center">
                   <img src={book.photoUrl} alt={book.title} className="w-20 h-20 object-cover mr-4" />
                   <div>
