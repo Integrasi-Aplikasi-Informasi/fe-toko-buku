@@ -1,0 +1,39 @@
+.container {
+  margin-top: 10px;
+  background-color: #182237;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.title {
+  margin-bottom: 20px;
+  font-weight: 200;
+  color: var(--textSoft);
+}
+
+.table {
+  width: 100%;
+}
+
+.table thead {
+  text-align: left;
+}
+
+.table td {
+  padding: 10px;
+}
+
+.name {
+  font-weight: bold;
+}
+
+.status {
+  border-radius: 5px;
+  padding: 5px;
+  font-size: 14px;
+  color: white;
+}
+
+.inactive {
+  background-color: lime;
+}

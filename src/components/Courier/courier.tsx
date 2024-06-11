@@ -1,5 +1,5 @@
 "use client";
-
+import styles from "./courier.module.css";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -37,20 +37,40 @@ const CourierComponent: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Courier Detail</h1>
-      {/* Render the courier data */}
-      {courierData.map((courier) => (
-        <div key={courier.courier_id}>
-          <h2>{courier.courier_name}</h2>
-          <p>Phone Number: {courier.phone_number}</p>
-          <p>Vehicle Type: {courier.vehicle_type}</p>
-          <p>License Plate: {courier.license_plate}</p>
-          <p>Status: {courier.status}</p>
-          <p>Created At: {courier.created_at}</p>
-          <p>Updated At: {courier.updated_at}</p>
-        </div>
-      ))}
+    <div className={styles.container}>
+      <h2 className={styles.title}>Daftar Kurir</h2>
+      <table className={styles.table}>
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Phone</th>
+            <th>Vehicle Type</th>
+            <th>Licende Plate</th>
+            <th>Status</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+          </tr>
+        </thead>
+        <tbody>
+          {courierData.map((courier) => (
+            <tr key={courier.courier_id}>
+              <td className={styles.name}>{courier.courier_name}</td>
+              <td>{courier.phone_number}</td>
+              <td>{courier.vehicle_type}</td>
+              <td>{courier.license_plate}</td>
+              <td>
+                <span
+                  className={`${styles.status} ${styles.active} ${styles.inactive}`}
+                >
+                  {courier.status}
+                </span>
+              </td>
+              <td>{courier.created_at}</td>
+              <td>{courier.updated_at}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
