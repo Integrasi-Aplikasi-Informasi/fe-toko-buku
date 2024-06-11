@@ -67,12 +67,6 @@ const SellerProductDashboard : React.FC<SellerProductDashboardProps> = ({ produc
                           <td className="px-6 py-4 whitespace-nowrap">{formatPrice(product.price)}</td>
                           <td className="px-6 py-4 whitespace-nowrap">
                               <button
-                                    onClick={() => handleEdit(product.product_id)}
-                                  className="mr-2 px-4 py-2 bg-[#35CE8D] text-white rounded-lg hover:bg-[#2eae76]"
-                              >
-                                  Edit
-                              </button>
-                              <button
                                     onClick={() => handleDelete(product)}
                                     className="px-4 py-2 bg-[#F08CAE] text-white rounded-lg hover:bg-[#d77997]"
                                 >
