@@ -5,8 +5,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 
 const Checkout = ({product}) => {
-    console.log(`di dalam component:`)
-    console.log(product)
+    const order_id  = ~~(Math.random() * 100) + 1;
     const [quantity, setQuantity] = useState(1);
     const [paymentUrl, setPaymentUrl] = useState("");
 
@@ -24,37 +23,19 @@ const Checkout = ({product}) => {
             productName: product.title,
             price: product.price,
             quantity: quantity,
+            order_id : order_id
         }
 
-    //     const response = await fetch("/api/tokenizer", {
-    //         method: "POST",
-    //         body: JSON.stringify(data)
-    //     })
-
-    //     const requestData = await response.json()
-    //     window.snap.pay(requestData.token)
-    // };
-
-    try {
         const response = await fetch("/api/tokenizer", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
             body: JSON.stringify(data)
-        });
+        })
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        const requestData = await response.json()
+        window.snap.pay(requestData.token)
+    };
 
-        const requestData = await response.json();
-        console.log('Token:', requestData.token);  // Log token to check if it is received correctly
-        window.snap.pay(requestData.token);
-    } catch (error) {
-        console.error('Error during checkout:', error);
-    }
-};
+
 
     const generatePaymentLink = async () => {
         const secret = process.env.NEXT_PUBLIC_SECRET
@@ -70,27 +51,12 @@ const Checkout = ({product}) => {
             }
             ],
             transaction_details: {
-                order_id: product.product_id,
+                order_id: order_id,
                 gross_amount: product.price * quantity
             }
         }
 
-        // const response = await fetch(`${process.env.NEXT_PUBLIC_API}/v1/payment-links`, {
-        //         method: "POST",
-        //         headers: {
-        //             "Accept": "application/json",
-        //             "Content-Type": "application/json",
-        //             "Authorization": basicAuth
-        //         },
-        //         body: JSON.stringify(data)
-        //         })
-
-        //     const paymentLink = await response.json()
-        //     setPaymentUrl(paymentLink.payment_url)
-        //     };
-
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API}/v1/payment-links`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API}/v1/payment-links`, {
                 method: "POST",
                 headers: {
                     "Accept": "application/json",
@@ -98,18 +64,12 @@ const Checkout = ({product}) => {
                     "Authorization": basicAuth
                 },
                 body: JSON.stringify(data)
-            });
+                })
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            const paymentLink = await response.json()
+            setPaymentUrl(paymentLink.payment_url)
+            };
 
-            const paymentLink = await response.json();
-            setPaymentUrl(paymentLink.payment_url);
-        } catch (error) {
-            console.error('Error generating payment link:', error);
-        }
-    };
 
             return(
         <>
