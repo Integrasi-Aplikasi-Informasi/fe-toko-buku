@@ -131,7 +131,7 @@ const SellerOrderDashboard : React.FC<SellerOrderDashboardProps> = ({ orders })=
                                 value={orders.status}
                                 onChange={(e) => handleStatusChange(e.target.value, orders.orderId)}
                             >
-                                <option value="received" className="bg-yellow-500">Received</option>
+                                <option value="received" className="bg-yellow-500">New Order</option>
                                 <option value="processed" className="bg-blue-500">Processed</option>
                                 <option value="shipped" className="bg-green-200">Shipped</option>
                                 <option value="completed" className="bg-gray-200">Completed</option>
