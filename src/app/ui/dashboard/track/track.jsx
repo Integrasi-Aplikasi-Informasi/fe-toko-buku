@@ -1,11 +1,9 @@
 import styles from "./track.module.css";
+import TrackPage from "@/components/Courier/TrackPage";
+import CourierComponent from "@/components/Courier/courier";
 
 const Track = () => {
-  return (
-    <div className={styles.track}>
-      <h1>Track</h1>
-    </div>
-  );
+  return <TrackPage />;
 };
 
 export default Track;

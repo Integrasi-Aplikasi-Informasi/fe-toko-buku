@@ -37,3 +37,7 @@
 .inactive {
   background-color: lime;
 }
+
+.track {
+  padding: 20px;
+}
